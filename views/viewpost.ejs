@@ -1,0 +1,165 @@
+<%- include('./partials/header') %>
+
+<div class="w-full min-h-screen bg-zinc-900 text-white py-2">
+  <div class="w-full flex items-center justify-between px-2 mb-4">
+    <a href="/profile" class="text-blue-600 font-semibold">&lt; profile</a>
+    <h6 class="font-semibold">Posts</h6>
+    <a href="/feed" class="font-semibold"><i class="ri-home-line"></i> home</a>
+  </div>
+
+  <div class="mb-4 px-2 bg-zinc-900 rounded">
+    <!-- Post Title -->
+    <div class="w-full flex items-center gap-2 justify-between">
+      <div class="w-full mb-2 flex items-center gap-2">
+        <h1 class="text-xl"><a href="/profile"><%= user.username %></a></h1>
+        <p class="text-gray-400"><%= dater(new Date(post.date)) %></p>
+      </div>
+      <p class="text-gray-400 px-2">
+        <div class="relative inline-block text-left">
+          <button id="dropdown-button" class="inline-flex justify-center w-full rounded-md   shadow-sm bg-zinc-900 text-xl font-semibold text-white hover:bg-zinc-900">
+            <i class="ri-more-2-fill"></i>
+          </button>
+        
+          <!-- Dropdown menu -->
+          <div id="dropdown-menu" class="hidden origin-top-right absolute right-0 mt-2 w-32 rounded-md shadow-lg bg-zinc-900 ring-1 ring-black ring-opacity-5">
+            <div class="py-1">
+              <a href="/delete/<%= post._id %>" class="flex items-center px-4 py-2 text-sm text-red-700 hover:bg-zinc-900">
+                <i class="ri-delete-bin-5-line mr-2"></i> Delete Post
+              </a>
+              <a href="/edit/<%= post._id %>" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-zinc-900">
+                <i class="ri-edit-line mr-2"></i> Edit Post
+              </a>
+            </div>
+          </div>
+        </div>
+      </p>
+    </div>
+
+    <!-- Post Image -->
+    <% if (post.picture) { %>
+      <img src="/images/uploads/<%= post.picture %>" alt="<%= post.caption %>"
+        class="w-full h-[50vh] object-cover object-center rounded-md">
+    <% } else { %>
+      <img src="/images/uploads/default.png" alt="Default Image"
+        class="w-full object-cover object-center h-[50vh] rounded-md">
+    <% } %>
+
+    <div class="flex gap-3 mt-2 text-2xl">
+      <% if(post.like.indexOf(user._id)===-1){ %>
+        <i class="heart ri-heart-3-line"></i>
+      <% } else { %>
+        <i class="heart ri-heart-3-fill text-red-500"></i>
+      <% } %>
+      <i class="ri-chat-3-line"></i>
+      <i class="ri-share-circle-line"></i>
+    </div>
+    <h3 class="likeval px-1 text-sm leading-none tracking-tight">
+      <%= post.like.length %> likes
+    </h3>
+
+    <!-- Post Content -->
+    <div class="w-full h-auto flex justify-between mt-2">
+      <p><%= post.caption %></p>
+    </div>
+  </div>
+
+  <!-- Previous Posts -->
+  <div id="previous-posts" class="mt-8 ">
+    <div id="posts-container">
+      <% posts.forEach(prevPost => { %>
+        <% if (post._id !== prevPost._id) { %>
+          <!-- Skip the current post -->
+          <div class="mb-8 px-2 bg-zinc-900 rounded">
+            <!-- Post Title -->
+            <div class="w-full flex items-center gap-2 justify-between">
+              <div class="w-full mb-2 flex items-center gap-2">
+                <h1 class="text-xl"><a href="/profile"><%= user.username %></a></h1>
+                <p class="text-gray-400"><%= dater(new Date(prevPost.date)) %></p>
+              </div>
+              <p class="text-gray-400 px-2">
+                <div class="relative inline-block text-left">
+                  <button  class="dropdown-button inline-flex justify-center w-full rounded-md   shadow-sm bg-zinc-900 text-xl font-semibold text-white hover:bg-zinc-900">
+                    <i class="ri-more-2-fill"></i>
+                  </button>
+                
+                  <!-- Dropdown menu -->
+                  <div id="" class="dropdown-menu hidden origin-top-right absolute right-0 mt-2 w-32 rounded-md shadow-lg bg-zinc-900 ring-1 ring-black ring-opacity-5">
+                    <div class="py-1">
+                      <a href="/delete/<%= prevPost._id %>" class="flex items-center px-4 py-2 text-sm text-red-700 hover:bg-zinc-900">
+                        <i class="ri-delete-bin-5-line mr-2"></i> Delete Post
+                      </a>
+                      <a href="/edit/<%= prevPost._id %>" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-zinc-900">
+                        <i class="ri-edit-line mr-2"></i> Edit Post
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </p>
+            </div>
+
+            <!-- Post Image -->
+            <% if (prevPost.picture) { %>
+              <img src="/images/uploads/<%= prevPost.picture %>" alt="<%= prevPost.caption %>"
+                class="w-full h-[50vh] object-cover object-center rounded-md">
+            <% } else { %>
+              <img src="/images/uploads/default.png" alt="Default Image"
+                class="w-full object-cover object-center h-[50vh] rounded-md">
+            <% } %>
+
+            <div class="flex gap-3 mt-2 text-2xl px-1">
+              <% if(prevPost.like.indexOf(user._id)===-1){ %>
+                <i class="heart ri-heart-3-line"></i>
+              <% } else { %>
+                <i class="heart ri-heart-3-fill text-red-500"></i>
+              <% } %>
+              <i class="ri-chat-3-line"></i>
+              <i class="ri-share-circle-line"></i>
+            </div>
+            <h3 class="likeval px-1 text-sm leading-none tracking-tight">
+              <%= prevPost.like.length %> likes
+            </h3>
+
+            <!-- Post Content -->
+            <div class="w-full h-auto flex justify-between mt-2">
+              <p><%= prevPost.caption %></p>
+            </div>
+          </div>
+        <% } %>
+      <% }) %>
+    </div>
+    <div id="previous-loading" class="text-center mt-4 hidden">
+      <p>Loading more posts...</p>
+    </div>
+  </div>
+
+  <!-- Next Posts -->
+  <div id="next-posts" class="mt-8 w-full mb-12">
+    <div id="next-posts-container">
+      <!-- Container for next posts loaded on scroll -->
+    </div>
+    <div id="next-loading" class="text-center mt-4 hidden">
+      <p>Loading more posts...</p>
+    </div>
+  </div>
+</div>
+
+<%- include('./partials/footer') %>
+<script>
+  window.currentPostId = '<%= post._id %>';
+  document.getElementById('dropdown-button').addEventListener('click', function() {
+  const dropdownMenu = document.getElementById('dropdown-menu');
+  dropdownMenu.classList.toggle('hidden');
+});
+
+document.querySelectorAll('.dropdown-button').forEach(function(button) {
+  button.addEventListener('click', function() {
+    // Find the closest dropdown menu related to this button
+    const dropdownMenu = this.nextElementSibling;
+    dropdownMenu.classList.toggle('hidden');
+  });
+});
+
+</script>
+
+
+<script src="/javascript/infinte-scroll.js"></script>

@@ -1,0 +1,33 @@
+<% include ./partials/header.ejs%>
+<div class="relative">
+    <div class="absolute w-full flex space-between justify-between items-center px-4 py-4 font-bold bg-zinc-900 text-white">
+        <a class="text-sm text-blue-500" href="/profile"><i class="ri-arrow-left-s-line"></i> profile</a>
+        <h2 class="leading-none text-sm">Follower's</h2>
+        <a class="text-sm" href="/feed"><i class="ri-home-line"></i> home</a>
+      </div>
+    <div class="w-full min-h-screen bg-zinc-900 pt-14">
+        <%if(users.length>0){%>
+        <%users.forEach((user)=>{%>
+            <div class="w-full px-4 pt-2 flex items-center text-white ">
+                <div class="w-16 h-16 rounded-full overflow-hidden object-cover ">
+                    <img src="/images/uploads/<%=user.picture%>" alt="">
+                </div>
+                <span class="rounded-sm h-20 px-4 py-4">
+                    <a href="/profile/<%= user.username%>">
+                    <p class="text-lg font-bold">
+                        <%=user.name%>
+                    </p>
+                    <p class="text-md opacity-50 leading-3">@ <%=user.username%>
+                    </p>
+                </a>
+                </span>
+
+            </div>
+            <%})}else{%>
+                <h6 class="py-60 opacity-50 text-white text-center"> No Follower's yet.</h6>
+            <%}%>
+            </div>
+</div>
+
+
+            <% include ./partials/footer.ejs%>

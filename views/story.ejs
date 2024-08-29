@@ -1,0 +1,122 @@
+<% include ./partials/header.ejs %>
+<div class="w-full min-h-screen bg-zinc-900 text-white">
+    <div class="px-4 py-2 flex gap-3 relative">
+        <div class="h-16 w-16 rounded-full overflow-hidden">
+            <img src="/images/uploads/<%= user.picture %>" alt="">
+        </div>
+        <span>
+            <div class=" flex gap-2 ">
+                <h3 class="text-lg font-semibold pt-2"><%= user.name %></h3>
+                <p id="storyTime" class="text-xs opacity-30 pt-4"><%= dater(new Date(story[0].date)) %></p>
+            </div>
+            <h3 id="caption" class="text-md opacity-50 font-semibold leading-none"><%= story[0].caption %></h3>
+        </span>
+        <a class="absolute text-4xl right-2 items-center" href="/feed"><i class="ri-close-line"></i></a>
+    </div>
+    <div class="relative w-full overflow-hidden relative">
+        <h1 id="increment" class="absolute top-56 right-0 text-6xl leading-none backdrop-blur-sm rounded-md cursor-pointer">
+            <i class="ri-arrow-right-s-line"></i>
+        </h1>
+        <h1 id="decrement" class="absolute top-56 left-0 text-6xl text-white backdrop-blur-sm rounded-md cursor-pointer">
+            <i class="ri-arrow-left-s-line"></i>
+        </h1>
+        <img id="storyImage" class="postimg w-full object-cover" src="/images/uploads/<%= story[0].story %>" alt="">
+    </div>
+</div>
+
+<script>
+    let increment = document.getElementById("increment");
+    let decrement = document.getElementById("decrement");
+    let storyImage = document.getElementById("storyImage");
+    let caption = document.getElementById("caption");
+    let storyTime = document.getElementById("storyTime");
+
+    // Array of stories fetched from the server-side EJS variable
+    let stories = <%- JSON.stringify(story || []) %>;
+    let currentIndex = 0; // Start with the first story
+    let autoDeleteTimeout; // Variable to store the timeout reference
+
+    // Function to format the time, similar to the 'dater' function used on the server side
+    function formatTime(dateString) {
+        const date = new Date(dateString);
+        // Customize the time format as needed (HH:MM AM/PM)
+        return date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+    }
+
+    // Function to update the story image, caption, and time
+    function updateStory() {
+        if (currentIndex >= 0 && currentIndex < stories.length) {
+            const currentStory = stories[currentIndex];
+            
+            // Check if the story is older than 24 hours
+            if (isStoryExpired(currentStory.date)) {
+                autoDeleteStory(); // Delete the story if expired
+                return;
+            }
+
+            storyImage.src = `/images/uploads/${currentStory.story}`;
+            caption.textContent = currentStory.caption;
+            storyTime.textContent = formatTime(currentStory.date); // Update the time
+
+            // Reset the auto-delete timer whenever a new story is shown
+            resetAutoDeleteTimer();
+        }
+    }
+
+    // Function to check if a story is expired (older than 24 hours)
+    function isStoryExpired(storyDate) {
+        const storyTime = new Date(storyDate).getTime();
+        const currentTime = new Date().getTime();
+        // Check if 24 hours (86400000 milliseconds) have passed since the story date
+        return currentTime - storyTime >= 86400000;
+    }
+
+    // Function to handle the automatic deletion of the current story
+    function autoDeleteStory() {
+        // Remove the current story from the array
+        stories.splice(currentIndex, 1);
+
+        // Adjust the current index if necessary
+        if (currentIndex >= stories.length) {
+            currentIndex = stories.length - 1; // Move to the last available story if at the end
+        }
+
+        // If no stories are left, show a message or handle accordingly
+        if (stories.length === 0) {
+           
+            // Optional: Redirect to another page or hide the story element
+        }
+
+        updateStory(); // Update the display with the next available story
+    }
+
+    // Function to reset the auto-delete timer
+    function resetAutoDeleteTimer() {
+        clearTimeout(autoDeleteTimeout); // Clear any existing timer
+        autoDeleteTimeout = setTimeout(autoDeleteStory, 5000); // Set a new timer for 5 seconds
+    }
+
+    // Increment button click event
+    increment.addEventListener("click", () => {
+        if (currentIndex < stories.length - 1) {
+            currentIndex++;
+            updateStory();
+        }
+    });
+
+    // Decrement button click event
+    decrement.addEventListener("click", () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateStory();
+        }
+    });
+
+    // Initial call to set the first story image, caption, and time
+    updateStory();
+</script>
+<% include ./partials/footer.ejs %>
